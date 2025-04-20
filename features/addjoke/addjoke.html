@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Joke</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <header>
+    <nav>
+        <a href="/features/signup/signup.html">Signup</a>
+        <a href="/features/login/login.html">Login</a>
+        <button id="logoutButton" style="display: none;">Logout</button>
+    </nav>
+  </header>
+  <div class="container">
+    <h1>Add a Joke</h1>
+    <form id="add-joke-form" action="/jokes" method="POST">
+      <div class="form-group">
+        <label for="question">Question</label>
+        <input type="text" class="form-control" id="question" name="question" required>
+      </div>
+      <div class="form-group">
+        <label for="answer">Answer</label>
+        <input type="text" class="form-control" id="answer" name="answer" required>
+      </div>
+      <div class="form-group">
+        <label for="rating">Rating</label>
+        <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Joke</button>
+    </form>
+  </div>
+
+  <br>
+  <br>
+  <div class="container">
+  <center><a href="/" class="btn btn-primary">Home</a></center>
+  </div>
+  
+
+  <script src="./addjoke.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoutButton = document.getElementById('logoutButton');
+        fetch('/check-auth')
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    logoutButton.style.display = 'block';
+                }
+            });
+
+        logoutButton.addEventListener('click', () => {
+            fetch('/logout', { method: 'POST' })
+                .then(() => window.location.reload());
+        });
+    });
+  </script>
+
+    <br>
+    <br>
+  <footer>
+    <Center>
+    <p>&copy; S. Buchanan</p>
+    </Center>
+  </footer>
+
+</body>
+</html>
