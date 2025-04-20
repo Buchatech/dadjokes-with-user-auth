@@ -1,4 +1,4 @@
-# Dad Jokes App
+# Dad Jokes App with User Authentication
 
 **Introducing "Dad Jokes: The Ultimate Source of Cheesy Laughter!"**
 
