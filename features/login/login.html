@@ -7,13 +7,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    <div class="container">
     <h1>Login</h1>
     <form id="loginForm">
+        <div class="form-group">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
     <p>Don't have an account? <a href="/features/signup/signup.html">Signup here</a>.</p>
     <br>
@@ -21,5 +26,13 @@
     <div class="container">
       <center><a href="/" class="btn btn-primary">Home</a></center>
     </div>
+
+    <br>
+    <br>
+  <footer>
+    <Center>
+    <p>&copy; S. Buchanan</p>
+    </Center>
+  </footer>
 </body>
 </html>
