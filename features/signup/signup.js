@@ -14,6 +14,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
         alert('Signup successful! Redirecting to login...');
         window.location.href = '/features/login/login.html';
     } else {
-        alert('Signup failed. Please try again.');
+        const error = await response.json();
+        alert(`Signup failed: ${error.message || 'Please try again.'}`);
     }
 });
