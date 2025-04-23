@@ -4,29 +4,7 @@ const session = require('express-session');
 const db = require('./config/dbinfo');
 const router = express.Router();
 
-const app = express();
-app.use(express.json());
-app.use(session({
-    secret: 'fd9832jkdsf9238r98sdfj9238sf',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
-
-// Middleware to check if the user is authenticated
-function isAuthenticated(req, res, next) {
-    if (req.session.userId) {
-        return next();
-    }
-    res.status(401).send('Unauthorized: Please log in to access this page.');
-}
-
-// Protect jokelist.html route
-app.get('/features/jokelist/jokelist.html', isAuthenticated, (req, res) => {
-    res.sendFile(__dirname + '/features/jokelist/jokelist.html');
-});
-
-// Signup route
+//Signup route
 router.post('/signup', async (req, res) => {
     const { username, email, password } = req.body;
     try {
@@ -45,22 +23,48 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login route
-router.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    const query = 'SELECT * FROM users WHERE username = ?';
-    db.query(query, [username], async (err, results) => {
-        if (err || results.length === 0) {
-            return res.status(401).send('Invalid username or password');
-        }
-        const user = results[0];
-        const match = await bcrypt.compare(password, user.hashed_password);
-        if (match) {
-            req.session.userId = user.id;
-            res.status(200).send('Login successful');
-        } else {
-            res.status(401).send('Invalid username or password');
-        }
-    });
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  console.log('Login attempt for:', username);
+  
+  const query = 'SELECT * FROM users WHERE username = ?';
+  db.query(query, [username], async (err, results) => {
+      if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ message: 'Server error' });
+      }
+      
+      if (results.length === 0) {
+          console.log('User not found');
+          return res.status(401).json({ message: 'Invalid username or password' });
+      }
+      
+      const user = results[0];
+      console.log('User found, comparing passwords');
+      
+      try {
+          const match = await bcrypt.compare(password, user.hashed_password);
+          console.log('Password match result:', match);
+          
+          if (match) {
+              // Don't try to set session directly from router
+              // Instead, return user info to be handled in index.js
+              console.log('Login successful for user:', username);
+              return res.status(200).json({ 
+                  message: 'Login successful',
+                  user: {
+                      id: user.id,
+                      username: user.username
+                  }
+              });
+          } else {
+              return res.status(401).json({ message: 'Invalid username or password' });
+          }
+      } catch (error) {
+          console.error('Error comparing passwords:', error);
+          return res.status(500).json({ message: 'Server error' });
+      }
+  });
 });
 
 // Logout route

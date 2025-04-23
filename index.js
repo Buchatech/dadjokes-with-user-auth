@@ -4,8 +4,11 @@ const db = require('./config/dbinfo');
 const app = express();
 const port = 80;
 const jokeRouter = require('./apiserver');
+const session = require('express-session');
+const path = require('path');
 app.use(express.json());
 app.use(express.static(__dirname));
+app.use(express.urlencoded({ extended: true }));
 
 // Use API routes
 app.use('/japi', jokeRouter);
@@ -15,6 +18,39 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/index.html');
   });
 
+  // Session middleware
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
+// Static files middleware
+app.use(express.static(path.join(__dirname, '/')));
+
+
+// Middleware to check if the user is authenticated
+function isAuthenticated(req, res, next) {
+  if (req.session.userId) {
+      return next();
+  }
+  res.status(401).send('Unauthorized: Please log in to access this page.');
+}
+
+// Check authentication status route
+  app.get('/check-auth', (req, res) => {
+    if (req.session.userId) {
+        res.json({ loggedIn: true, username: req.session.username });
+    } else {
+        res.json({ loggedIn: false });
+    }
+  });
+
+// Protected routes jokelist.html
+app.get('/features/jokelist/jokelist.html', isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'features/jokelist/jokelist.html'));
+});
 
 // 404 route
 app.use((req, res) => {
