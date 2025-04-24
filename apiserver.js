@@ -47,6 +47,8 @@ router.post('/login', async (req, res) => {
           console.log('Password match result:', match);
           
           if (match) {
+            req.session.userId = user.id;
+            req.session.username = user.username;
               // Don't try to set session directly from router
               // Instead, return user info to be handled in index.js
               console.log('Login successful for user:', username);
