@@ -9,7 +9,6 @@
     <nav>
         <a href="/features/signup/signup.html">Signup</a>
         <a href="/features/login/login.html">Login</a>
-        <button id="logoutButton" style="display: none;">Logout</button>
     </nav>
   </header>
   <div class="container">
@@ -31,10 +30,16 @@
     </form>
   </div>
 
+  <center id="logout-container" style="display: none;">
+  <br>
+  <br>
+  <button id="simple-logout-btn" class="btn btn-danger">Logout</button>
+  <br>
+  <br>
   <br>
   <br>
   <div class="container">
-  <center><a href="/" class="btn btn-primary">Home</a></center>
+  <a href="/" class="btn btn-primary">Home</a></center>
   </div>
   
 
@@ -56,6 +61,49 @@
         });
     });
   </script>
+
+<!-- logout button JavaScript -->
+<script>
+  // Check if user is logged in when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    fetch('/check-auth')
+      .then(response => response.json())
+      .then(data => {
+        const logoutContainer = document.getElementById('logout-container');
+        if (data.loggedIn) {
+          // Show logout button if logged in
+          logoutContainer.style.display = 'block';
+        } else {
+          // Hide logout button if not logged in
+          logoutContainer.style.display = 'none';
+        }
+      })
+      .catch(error => {
+        console.error('Error checking auth status:', error);
+      });
+  });
+
+  // Logout button click handler
+  document.getElementById('simple-logout-btn').addEventListener('click', async function() {
+    console.log('Logout button clicked');
+    try {
+      const response = await fetch('/japi/logout', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+      });
+      
+      if (response.ok) {
+        alert('Logged out successfully');
+        window.location.href = '/';
+      } else {
+        alert('Logout failed');
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  });
+</script>
+
 
     <br>
     <br>
